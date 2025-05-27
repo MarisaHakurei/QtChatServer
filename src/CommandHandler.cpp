@@ -85,7 +85,7 @@ void CommandHandler::searchFriend(const std::string& info, Session *session) {
 }
 
 void CommandHandler::addFriendRequest(int account, UserInfo info, std::string msg, Session *session) {
-    
+    //test
 }
 
 void CommandHandler::searchFriendList(int account, Session *session) {
