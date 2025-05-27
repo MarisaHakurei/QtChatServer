@@ -5,7 +5,7 @@
 #ifndef SESSION_H
 #define SESSION_H
 
-#include "common.h"
+#include "Common.h"
 #include "nlohmann/json_fwd.hpp"
 
 class Session {
@@ -27,7 +27,7 @@ public:
     int handleMsg(nlohmann::json &json_msg);
 
     //获取群成员账号
-    std::vector<int> getGroupMember(int group_id);
+    std::vector<int> getGroupMember(int group_account);
 
     //获取群列表
     std::vector<int> getGroupList(int account);
@@ -36,15 +36,15 @@ public:
     std::vector<int> getFriendList(int account);
 
     //获取在线好友fd
-    std::vector<int> getFriendListFd(std::vector<int> friend_list);
+    std::vector<int> getFriendListFd(const std::vector<int>& friend_list);
 
-    int getFriendFd(int account);
+    int getFriendFd(int friend_account);
 
     //发送系统消息
-    void sendSystemMsg(int fd, std::string msg);
+    void sendSystemMsg(int fd, const std::string& msg);
 
     //获取群主fd
-    int getGroupOwnFd(int group_id);
+    int getGroupOwnFd(int group_account);
 
 public:
     //get set

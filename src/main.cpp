@@ -1,7 +1,7 @@
 //
 // Created by Kotori on 2025/5/23.
 //
-#include "common.h"
+#include "Common.h"
 
 //创建或打开数据库
 SQLite::Database db("user.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
@@ -15,11 +15,11 @@ int main(int argc, char *argv[]) {
     db.exec(
         "CREATE TABLE IF NOT EXISTS friend (user1 INTEGER NOT NULL, user2 INTEGER NOT NULL, PRIMARY KEY (user1, user2));");
     db.exec(
-        "CREATE TABLE IF NOT EXISTS group_table (group_account INTEGER PRIMARY KEY, group_name TEXT, create_time DATETIME, group_master INTEGER);");
+        "CREATE TABLE IF NOT EXISTS group_table (group_account INTEGER PRIMARY KEY, group_name TEXT, create_time DATETIME, group_own_fd INTEGER);");
     db.exec(
         "CREATE TABLE IF NOT EXISTS user (account INTEGER PRIMARY KEY AUTOINCREMENT, password VARCHAR(32), name VARCHAR(32), signature TEXT, online INT DEFAULT 0 NOT NULL, icon TEXT);");
     db.exec(
-        "CREATE TABLE IF NOT EXISTS member (member_id INTEGER, group_account INTEGER, group_nickname TEXT);");
+        "CREATE TABLE IF NOT EXISTS member (member_account INTEGER, group_account INTEGER, group_nickname TEXT);");
 
     /*端口号设置*/
     int default_port = 8888;
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     bzero(&server_addr, sizeof(server_addr));
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = default_port;
+    server_addr.sin_port = htons(default_port);
 
     /*允许socket立即重用*/
     int val = 1;

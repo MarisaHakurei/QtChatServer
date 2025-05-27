@@ -9,12 +9,14 @@ add_subdirectory(thirdparty/SQLiteCpp)
 
 add_executable(QtChatServer
         src/main.cpp
-        src/common.cpp
-        src/common.h
+        src/Common.cpp
+        src/Common.h
         src/infos.h
         src/DeThread.h
         src/Session.cpp
-        src/Session.h)
+        src/Session.h
+        src/CommandHandler.cpp
+        src/CommandHandler.h)
 
 target_link_libraries(${PROJECT_NAME}
         PRIVATE pthread SQLiteCpp sqlite3 nlohmann_json
