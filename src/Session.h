@@ -15,12 +15,11 @@ public:
     ~Session();
 
 public:
-
     void sendMsg(nlohmann::json &json_msg);
 
     void sendMsg(int fd, nlohmann::json &json_msg);
 
-    void sendMsg(const std::vector<int>& fds, nlohmann::json &json_msg);
+    void sendMsg(const std::vector<int> &fds, nlohmann::json &json_msg);
 
     nlohmann::json recvMsg();
 
@@ -36,12 +35,12 @@ public:
     std::vector<int> getFriendList(int account);
 
     //获取在线好友fd
-    std::vector<int> getFriendListFd(const std::vector<int>& friend_list);
+    std::vector<int> getFriendListFd(const std::vector<int> &friend_list);
 
     int getFriendFd(int friend_account);
 
     //发送系统消息
-    void sendSystemMsg(int fd, const std::string& msg);
+    void sendSystemMsg(int fd, const std::string &msg);
 
     //获取群主fd
     int getGroupOwnFd(int group_account);
@@ -53,6 +52,8 @@ public:
     void setAccount(int account) { account_ = account; }
     std::string getUserName() { return user_name_; }
     void setUserName(const std::string &user_name) { user_name_ = user_name; }
+    void setUserInfo(const UserInfo &user_info) { user_info_ = user_info; }
+    UserInfo getUserInfo() { return user_info_; }
     bool getIsLogin() { return is_login_; }
     void setIsLogin(bool is_login) { is_login_ = is_login; }
 

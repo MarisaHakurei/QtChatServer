@@ -129,7 +129,7 @@ int Session::handleMsg(nlohmann::json &json_msg) {
             std::string name = json_msg.at("name");
             try {
                 int a = std::stoi(account, nullptr, 0);
-                CommandHandler::registerUser(a, std::move(password), std::move(name), this);
+                CommandHandler::registerUser(a, password, name, this);
             } catch (std::invalid_argument &e) {
                 printf(e.what());
                 return 0;
@@ -150,7 +150,7 @@ int Session::handleMsg(nlohmann::json &json_msg) {
             break;
         }
         case cmd_friend_search: {
-            //好友查找
+            //好友查找（并非好友）
             std::string search_info = json_msg.at("search_info");
             CommandHandler::searchFriend(search_info, this);
             break;

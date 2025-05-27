@@ -9,11 +9,11 @@
 class CommandHandler {
 public:
     //传参类型待修改
-    static void registerUser(int account, std::string password, std::string name, Session *session);
+    static void registerUser(int account, const std::string& password, const std::string &name, Session *session);
 
-    static void login(int account, std::string password, Session *session);
+    static void login(int account, const std::string& password, Session *session);
 
-    static void searchFriend(std::string info, Session *session);
+    static void searchFriend(const std::string& info, Session *session);
 
     static void addFriendRequest(int account, UserInfo info, std::string msg, Session *session);
 
