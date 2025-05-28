@@ -43,11 +43,8 @@ void CommandHandler::login(int account, const std::string &password, Session *se
         for (int i = 0; i < 3; i++) {
             json_msg["info"][i] = query.getColumn(i).getString();
         }
-        //存储用户信息
-        UserInfo user_info = {
-            account, password, json_msg["info"][0], json_msg["info"][1],
-            1, json_msg["info"][2]
-        };
+        // 存储用户信息
+        UserInfo user_info = {account, password, json_msg["info"][0], json_msg["info"][1], 1, json_msg["info"][2]};
         session->setUserInfo(user_info);
         session->setAccount(account);
         session->setIsLogin(true);
@@ -60,7 +57,7 @@ void CommandHandler::login(int account, const std::string &password, Session *se
     session->sendMsg(json_msg);
 }
 
-void CommandHandler::searchFriend(const std::string& info, Session *session) {
+void CommandHandler::searchFriend(const std::string &info, Session *session) {
     /*info代表account或者name*/
     nlohmann::json json_msg;
     int account = 0;
@@ -85,23 +82,18 @@ void CommandHandler::searchFriend(const std::string& info, Session *session) {
 }
 
 void CommandHandler::addFriendRequest(int account, UserInfo info, std::string msg, Session *session) {
-    //test
+    // test
 }
 
-void CommandHandler::searchFriendList(int account, Session *session) {
-}
+void CommandHandler::searchFriendList(int account, Session *session) {}
 
-void CommandHandler::searchGroup(std::string info, Session *session) {
-}
+void CommandHandler::searchGroup(std::string info, Session *session) {}
 
 void CommandHandler::addGroupRequest(int group_account, std::string group_name, UserInfo info, std::string msg,
-                                     Session *session) {
-}
+                                     Session *session) {}
 
 /*根据用户账号查询用户的群组列表*/
-void CommandHandler::searchGroupList(int account, Session *session) {
-}
+void CommandHandler::searchGroupList(int account, Session *session) {}
 
 /*根据群组id查询群成员列表*/
-void CommandHandler::searchGroupMemberList(int account, Session *session) {
-}
+void CommandHandler::searchGroupMemberList(int account, Session *session) {}

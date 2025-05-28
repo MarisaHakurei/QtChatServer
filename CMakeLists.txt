@@ -18,6 +18,8 @@ add_executable(${PROJECT_NAME}
         src/Session.h
         src/CommandHandler.cpp
         src/CommandHandler.h
+        src/ChatTask.cpp
+        src/ChatTask.h
 )
 
 # 显式链接目标（关键改动）

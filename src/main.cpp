@@ -2,7 +2,7 @@
 // Created by Kotori on 2025/5/23.
 //
 #include "Common.h"
-
+#include "ChatTask.h"
 //创建或打开数据库
 SQLite::Database db("user.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
 
@@ -84,9 +84,7 @@ int main(int argc, char *argv[]) {
             inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
         std::lock_guard lock(map_mutex);
         user_map[connect_fd] = connect_fd;
-
-        //处理客户端请求，未实现
-        thread_pool.emplace_back();
+        thread_pool.emplace_back(taskThread, connect_fd);
     }
     close(listen_fd);
     return 0;
