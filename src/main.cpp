@@ -86,8 +86,10 @@ int main(int argc, char *argv[]) {
         }
         LOGINFO("Connect from %s:%hu...\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
         std::lock_guard lock(map_mutex);
-        user_map[connect_fd] = connect_fd;
-        thread_pool.emplace_back(taskThread, connect_fd);
+        {
+            user_map[connect_fd] = connect_fd;
+            thread_pool.emplace_back(taskThread, connect_fd);
+        }
     }
     close(listen_fd);
     return 0;

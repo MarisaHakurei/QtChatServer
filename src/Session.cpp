@@ -27,30 +27,27 @@ Session::~Session() {
 void Session::sendMsg(nlohmann::json &json_msg) {
     const std::string msg = json_msg.dump();
     const uint32_t len = static_cast<uint32_t>(msg.length());
-    const uint32_t net_len = htonl(len);
 
     /*消息格式：消息长度(4B) + 消息内容*/
-    std::vector<char> message(sizeof(net_len) + len);
-    memcpy(message.data(), &net_len, sizeof(net_len));
-    memcpy(message.data() + sizeof(net_len), msg.data(), len);
-
+    std::vector<char> message(sizeof(len) + len);
+    memcpy(message.data(), &len, sizeof(len));
+    memcpy(message.data() + sizeof(len), msg.data(), len);
     ssize_t sent = send(socket_, message.data(), message.size(), 0);
     if (sent <= 0) {
         perror("send failed");
         return;
     }
-    LOGINFO("send success, len : %d , msg : %s\n", len, message.data());
+    LOGINFO("send success, len : %d , msg : %s\n", len, msg.c_str());
 }
 
 void Session::sendMsg(int fd, nlohmann::json &json_msg) {
     const std::string msg = json_msg.dump();
     const uint32_t len = static_cast<uint32_t>(msg.length());
-    const uint32_t net_len = htonl(len);
 
     /*消息格式：消息长度(4B) + 消息内容*/
-    std::vector<char> message(sizeof(net_len) + len);
-    memcpy(message.data(), &net_len, sizeof(net_len));
-    memcpy(message.data() + sizeof(net_len), msg.data(), len);
+    std::vector<char> message(sizeof(len) + len);
+    memcpy(message.data(), &len, sizeof(len));
+    memcpy(message.data() + sizeof(len), msg.data(), len);
 
     ssize_t sent = send(fd, message.data(), message.size(), 0);
     if (sent <= 0) {
@@ -63,12 +60,11 @@ void Session::sendMsg(int fd, nlohmann::json &json_msg) {
 void Session::sendMsg(const std::vector<int> &fds, nlohmann::json &json_msg) {
     const std::string msg = json_msg.dump();
     const uint32_t len = static_cast<uint32_t>(msg.length());
-    const uint32_t net_len = htonl(len);
 
     /*消息格式：消息长度(4B) + 消息内容*/
-    std::vector<char> message(sizeof(net_len) + len);
-    memcpy(message.data(), &net_len, sizeof(net_len));
-    memcpy(message.data() + sizeof(net_len), msg.data(), len);
+    std::vector<char> message(sizeof(len) + len);
+    memcpy(message.data(), &len, sizeof(len));
+    memcpy(message.data() + sizeof(len), msg.data(), len);
 
     for (auto fd: fds) {
         ssize_t sent = send(socket_, message.data(), message.size(), 0);
@@ -99,13 +95,11 @@ nlohmann::json Session::recvMsg() {
     }
 
     memcpy(&len, buffer.data(), 4);
-    len = ntohl(len);
 
-    std::vector<char> message(len);
-    ssize_t msg_ret = recv(socket_, message.data(), message.size(), MSG_WAITALL);
-    if (msg_ret != len) {
-        perror("len != msg len");
-    }
+    std::vector<char> message(len + 1); // 多分配一个字节存放 '\0'
+    ssize_t msg_ret = recv(socket_, message.data(), len, MSG_WAITALL);
+    message[len] = '\0'; // 确保字符串终止
+    
     LOGINFO("recv len : %lu, message : %s\n", msg_ret, message.data());
 
     try {
@@ -173,7 +167,7 @@ int Session::handleMsg(nlohmann::json &json_msg) {
             if (json_msg.at("reply") == "yes") {
                 res = "同意";
                 // 添加到好友表中
-                SQLite::Statement query(db, "insert into friend value(?,?)");
+                SQLite::Statement query(db, "insert into friend values(?,?)");
                 query.bind(1, sender);
                 query.bind(2, account);
                 query.exec();

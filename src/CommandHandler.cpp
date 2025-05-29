@@ -41,11 +41,11 @@ void CommandHandler::login(int account, const std::string &password, Session *se
     query.bind(1, account);
     query.bind(2, password);
     if (!query.executeStep()) {
-        LOGINFO("账号或密码错误");
+        printf("账号或密码错误");
         json_msg["res"] = "no";
         json_msg["err"] = "账号或密码错误";
     } else {
-        LOGINFO("登陆成功");
+        printf("登录成功");
         json_msg["res"] = "yes";
         for (int i = 0; i < 3; i++) {
             json_msg["info"][i] = query.getColumn(i).getString();
