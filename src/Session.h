@@ -25,28 +25,28 @@ public:
 
     int handleMsg(nlohmann::json &json_msg);
 
-    //获取群成员账号
+    // 获取群成员账号
     std::vector<int> getGroupMember(int group_account);
 
-    //获取群列表
+    // 获取群列表
     std::vector<int> getGroupList(int account);
 
-    //获取好友列表
+    // 获取好友列表
     std::vector<int> getFriendList(int account);
 
-    //获取在线好友fd
+    // 获取在线好友fd(并非好友，在线用户就行)
     std::vector<int> getFriendListFd(const std::vector<int> &friend_list);
 
     int getFriendFd(int friend_account);
 
-    //发送系统消息
+    // 发送系统消息
     void sendSystemMsg(int fd, const std::string &msg);
 
-    //获取群主fd
+    // 获取群主fd
     int getGroupOwnFd(int group_account);
 
 public:
-    //get set
+    // get set
     int getSocket() { return socket_; }
     int getAccount() { return account_; }
     void setAccount(int account) { account_ = account; }
@@ -63,17 +63,17 @@ public:
     void setCurrentFriendList(const std::vector<int> &friend_list) { friend_list_ = friend_list; }
 
 private:
-    //clear
+    // clear
 private:
     int socket_;
-    int account_; //账号
-    std::string user_name_; //用户名
-    bool is_login_; //登录状态
-    std::vector<int> group_list_; //群列表
-    std::vector<int> friend_list_; //好友列表
-    UserInfo user_info_; //用户信息
-    SQLite::Statement *statement_; //查询指针
+    int account_; // 账号
+    std::string user_name_; // 用户名
+    bool is_login_; // 登录状态
+    std::vector<int> group_list_; // 群列表
+    std::vector<int> friend_list_; // 好友列表
+    UserInfo user_info_; // 用户信息
+    SQLite::Statement *statement_; // 查询指针
 };
 
 
-#endif //SESSION_H
+#endif // SESSION_H

@@ -6,7 +6,7 @@
 #include "CommandHandler.h"
 #include "nlohmann/json_fwd.hpp"
 
-Session::Session(int socket): statement_(nullptr) {
+Session::Session(int socket) : statement_(nullptr) {
     is_login_ = false;
     account_ = -1;
     socket_ = socket;
@@ -18,7 +18,7 @@ Session::~Session() {
         socket_ = -1;
     }
     if (is_login_ == true) {
-        //todo
+        // todo
         is_login_ = false;
     }
     //...
@@ -85,7 +85,7 @@ nlohmann::json Session::recvMsg() {
     nlohmann::json json_msg;
     uint32_t len = 0;
     std::vector<char> buffer(4);
-    //先接收前四字节，代表长度
+    // 先接收前四字节，代表长度
     while (true) {
         ssize_t ret = recv(socket_, buffer.data(), 4, 0);
         if (ret > 0) {
@@ -123,7 +123,7 @@ int Session::handleMsg(nlohmann::json &json_msg) {
     int cmd = json_msg.at("cmd");
     switch (cmd) {
         case cmd_regist: {
-            //注册命令
+            // 注册命令
             std::string account = json_msg.at("account");
             std::string password = json_msg.at("password");
             std::string name = json_msg.at("name");
@@ -137,7 +137,7 @@ int Session::handleMsg(nlohmann::json &json_msg) {
             break;
         }
         case cmd_login: {
-            //登录命令
+            // 登录命令
             std::string account = json_msg.at("account");
             std::string password = json_msg.at("password");
             try {
@@ -150,90 +150,84 @@ int Session::handleMsg(nlohmann::json &json_msg) {
             break;
         }
         case cmd_friend_search: {
-            //好友查找（并非好友）
+            // 好友查找（并非好友）
             std::string search_info = json_msg.at("search_info");
             CommandHandler::searchFriend(search_info, this);
             break;
         }
         case cmd_add_friend_request: {
-            //添加好友请求
-            int sender = json_msg.at("sender"); //发送请求的用户本身
-            int account = json_msg.at("account"); //被添加的用户
+            // 添加好友请求
+            int sender = json_msg.at("sender"); // 发送请求的用户本身
+            int account = json_msg.at("account"); // 被添加的用户
             std::string msg = json_msg.at("msg");
-            UserInfo user_info = {
-                sender, "", json_msg.at("name"), json_msg.at("sig"),
-                1, json_msg.at("icon")
-            };
+            UserInfo user_info = {sender, "", json_msg.at("name"), json_msg.at("sig"), 1, json_msg.at("icon")};
             CommandHandler::addFriendRequest(account, user_info, msg, this);
             break;
         }
         case cmd_add_friend_response: {
-            //添加好友请求响应
+            // 添加好友请求响应
             int sender = json_msg.at("sender");
             int account = json_msg.at("account");
             int fd = getFriendFd(sender);
             std::string res;
             if (json_msg.at("reply") == "yes") {
                 res = "同意";
-                //添加到好友表中
+                // 添加到好友表中
                 SQLite::Statement query(db, "insert into friend value(?,?)");
                 query.bind(1, sender);
                 query.bind(2, account);
                 query.exec();
-                //发送更新后的好友列表
+                // 发送更新后的好友列表
                 CommandHandler::searchFriendList(sender, this);
                 CommandHandler::searchFriendList(account, this);
             } else {
                 res = "拒绝";
             }
             if (fd > 0) {
-                //系统发送回执
+                // 系统发送回执
                 std::string system_msg = std::to_string(account) + res + "了你的好友请求\n";
                 sendSystemMsg(fd, system_msg);
             }
             break;
         }
         case cmd_friend_list: {
-            //获取好友列表
+            // 获取好友列表
             usleep(400000);
             int account = json_msg.at("account");
             CommandHandler::searchFriendList(account, this);
             break;
         }
         case cmd_friend_chat: {
-            //好友聊天
+            // 好友聊天
             int account = json_msg.at("account");
             int fd = getFriendFd(account);
             if (fd > 0) {
                 sendMsg(fd, json_msg);
             } else {
-                //todo
-                //系统发送提示对方不在线
+                // todo
+                // 系统发送提示对方不在线
             }
             break;
         }
         case cmd_group_create: {
-            //创建群聊
+            // 创建群聊
             int account = json_msg.at("account");
             int group_name = json_msg.at("group_name");
-            //todo
+            // todo
             break;
         }
         case cmd_group_search: {
-            //查询群聊
+            // 查询群聊
             std::string search_info = json_msg.at("search_info");
             CommandHandler::searchGroup(search_info, this);
             break;
         }
         case cmd_group_join_request: {
-            //加群请求
+            // 加群请求
             int group_account = json_msg.at("account");
             int sender = json_msg.at("sender");
             std::string group_name = json_msg.at("group_name");
-            UserInfo info = {
-                sender, "", json_msg.at("name"),
-                json_msg.at("sig"), 1, json_msg.at("icon")
-            };
+            UserInfo info = {sender, "", json_msg.at("name"), json_msg.at("sig"), 1, json_msg.at("icon")};
             CommandHandler::addGroupRequest(group_account, group_name, info, json_msg.at("msg"), this);
             break;
         }
@@ -242,7 +236,7 @@ int Session::handleMsg(nlohmann::json &json_msg) {
             int group_account = json_msg.at("account");
             int sender = json_msg.at("sender");
             int fd = getFriendFd(sender);
-            //为什么这里要先发送响应给用户
+            // 为什么这里要先发送响应给用户
             sendMsg(fd, json_msg);
 
             if (json_msg.at("reply") == "yes") {
@@ -263,9 +257,9 @@ int Session::handleMsg(nlohmann::json &json_msg) {
         }
         case cmd_group_chat: {
             int account = json_msg.at("account");
-            std::vector<int> friend_list = getFriendList(account);
+            std::vector<int> friend_list = getGroupMember(account);
             std::vector<int> fds = getFriendListFd(friend_list);
-            //发给群里除自己以外的所有人
+            // 发给群里除自己以外的所有人
             int self_fd = getSocket();
             auto it = find(fds.begin(), fds.end(), self_fd);
             if (it != fds.end()) {
@@ -283,13 +277,13 @@ int Session::handleMsg(nlohmann::json &json_msg) {
         case cmd_group_member_add: {
             int account = json_msg.at("account");
             std::string group_name = json_msg.at("group_name");
-            //todo
+            // todo
             break;
         }
         case cmd_group_member_del: {
             int account = json_msg.at("account");
             std::string group_name = json_msg.at("group_name");
-            //todo
+            // todo
             break;
         }
         case cmd_set_icon: {

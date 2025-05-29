@@ -8,21 +8,23 @@
 #include "infos.h"
 
 // 线程相关
-#include <pthread.h>
 #include <mutex>
+#include <pthread.h>
 #include <thread>
 
+
 // 网络相关
+#include <arpa/inet.h>
+#include <cassert>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
+#include <netdb.h>
+#include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <cstring>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <cassert>
+
 // c++
 #include <iostream>
 #include <map>
@@ -34,7 +36,7 @@
 #define RET_OK 0
 #define RET_ERROR (-1)
 #define RET_AGAIN (-2) // 重新读取
-#define RET_EXIT (-3)  // 客户端退出
+#define RET_EXIT (-3) // 客户端退出
 
 #ifndef FILENAME
 #define FILENAME (__FILE__)
@@ -50,17 +52,14 @@
 
 #define ChatLog std::cout << "[ " << FILENAME << ":" << FILELINE << "][" << FILEFUNCTION << "]"
 
-#define LOGINFO(format, ...)                                                                 \
-    {                                                                                        \
-        printf("[ %s : %d] [%s]>>" format, FILENAME, FILELINE, FILEFUNCTION, ##__VA_ARGS__); \
-    }
+#define LOGINFO(format, ...)                                                                                           \
+    { printf("[ %s : %d] [%s]>>" format, FILENAME, FILELINE, FILEFUNCTION, ##__VA_ARGS__); }
 
-extern SQLite::Database  db;
+extern SQLite::Database db;
 extern std::map<int, int> user_map;
 
 // 命令枚举
-enum commands
-{
+enum commands {
     cmd_regist = 0,
     cmd_login,
     cmd_logout,
@@ -82,4 +81,4 @@ enum commands
     cmd_set_icon
 };
 
-#endif //COMMON_H
+#endif // COMMON_H

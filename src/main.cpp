@@ -1,9 +1,10 @@
 //
 // Created by Kotori on 2025/5/23.
 //
-#include "Common.h"
 #include "ChatTask.h"
-//创建或打开数据库
+#include "Common.h"
+
+// 创建或打开数据库
 SQLite::Database db("user.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
 
 std::map<int, int> user_map;
@@ -12,14 +13,17 @@ std::mutex map_mutex;
 
 int main(int argc, char *argv[]) {
     /*创建好友关系、群组管理、用户、群组成员四张表*/
-    db.exec(
-        "CREATE TABLE IF NOT EXISTS friend (user1 INTEGER NOT NULL, user2 INTEGER NOT NULL, PRIMARY KEY (user1, user2));");
-    db.exec(
-        "CREATE TABLE IF NOT EXISTS group_table (group_account INTEGER PRIMARY KEY, group_name TEXT, create_time DATETIME, group_own_fd INTEGER);");
-    db.exec(
-        "CREATE TABLE IF NOT EXISTS user (account INTEGER PRIMARY KEY AUTOINCREMENT, password VARCHAR(32), name VARCHAR(32), signature TEXT, online INT DEFAULT 0 NOT NULL, icon TEXT);");
-    db.exec(
-        "CREATE TABLE IF NOT EXISTS member (member_account INTEGER, group_account INTEGER, group_nickname TEXT);");
+    db.exec("CREATE TABLE IF NOT EXISTS friend \
+        (user1 INTEGER NOT NULL, user2 INTEGER NOT NULL, PRIMARY KEY (user1, "
+            "user2));");
+    db.exec("CREATE TABLE IF NOT EXISTS group_table \
+        (group_account INTEGER PRIMARY KEY, group_name TEXT, create_time "
+            "DATETIME, group_own_fd INTEGER);");
+    db.exec("CREATE TABLE IF NOT EXISTS user \
+        (account INTEGER PRIMARY KEY AUTOINCREMENT, password VARCHAR(32), name "
+            "VARCHAR(32), signature TEXT, online INT DEFAULT 0 NOT NULL, icon TEXT);");
+    db.exec("CREATE TABLE IF NOT EXISTS member \
+        (member_account INTEGER, group_account INTEGER, group_nickname TEXT);");
 
     /*端口号设置*/
     int default_port = 8888;
@@ -80,8 +84,7 @@ int main(int argc, char *argv[]) {
             perror("Connect Error");
             return 0;
         }
-        LOGINFO("Connect from %s:%hu...\n",
-            inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
+        LOGINFO("Connect from %s:%hu...\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
         std::lock_guard lock(map_mutex);
         user_map[connect_fd] = connect_fd;
         thread_pool.emplace_back(taskThread, connect_fd);

@@ -5,4 +5,4 @@
 #ifndef DETHREAD_H
 #define DETHREAD_H
 
-#endif //DETHREAD_H
+#endif // DETHREAD_H
